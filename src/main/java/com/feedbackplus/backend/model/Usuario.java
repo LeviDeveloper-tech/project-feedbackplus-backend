@@ -1,6 +1,5 @@
 package com.feedbackplus.backend.model;
 
-
 import java.time.LocalDateTime;
 
 import jakarta.persistence.*;
