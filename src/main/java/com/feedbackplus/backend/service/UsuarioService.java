@@ -1,14 +1,48 @@
 package com.feedbackplus.backend.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.feedbackplus.backend.model.Pessoa;
+import com.feedbackplus.backend.model.Usuario;
 import com.feedbackplus.backend.repository.*;
+import java.time.LocalDateTime;
 
 @Service
 public class UsuarioService {
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+    @Autowired
+    private PessoaRepository pessoaRepository;
 
-    private UsuarioRepository UsuarioRepository;
+    @Transactional
+    public String cadastrarNovoUsuario(Pessoa pessoa, String login, String senha) {
+        if (usuarioRepository.existsByLogin(login)) {
+            return "Erro: Este usuário ja existe!";
+        }
 
-    private PessoaRepository PessoaRepository;
-    
+        pessoa.setAtualizadoEm(LocalDateTime.now());
+
+        //Retorna os valores salvos/atualizados direto do banco
+        Pessoa pessoaSalva = pessoaRepository.save(pessoa);
+
+        Usuario novoUsuario = new Usuario();
+        novoUsuario.setNome(pessoaSalva.getNome());
+        novoUsuario.setLogin(login);
+        novoUsuario.setSenha(senha);
+        novoUsuario.setAtualizadoEm(LocalDateTime.now());
+
+        usuarioRepository.save(novoUsuario);
+
+        return "Usuário cadastrado com sucesso!";
+
+    }
+
+    public boolean realizarLogin(String login, String senha) {
+        return usuarioRepository.findByLogin(login)
+                .map(user -> user.getSenha().equals(senha))
+                .orElse(false);
+    }
+
 }

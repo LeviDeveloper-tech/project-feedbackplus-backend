@@ -13,7 +13,7 @@ public class Pessoa {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "pessoa_id")
-    private Long pessoaId;
+    private Integer pessoaId;
 
     private String nome;
     private String cpf;
