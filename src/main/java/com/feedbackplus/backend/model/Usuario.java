@@ -18,7 +18,7 @@ public class Usuario {
     private String login;
     private String senha;
 
-    @Column(name = "atualiziado_em")
+    @Column(name = "atualizado_em")
     private LocalDateTime atualizadoEm;
 
     @Column(name = "atualizado_por")
