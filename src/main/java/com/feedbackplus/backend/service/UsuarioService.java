@@ -8,6 +8,7 @@ import com.feedbackplus.backend.model.Pessoa;
 import com.feedbackplus.backend.model.Usuario;
 import com.feedbackplus.backend.repository.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class UsuarioService {
@@ -43,6 +44,11 @@ public class UsuarioService {
         return usuarioRepository.findByLogin(login)
                 .map(user -> user.getSenha().equals(senha))
                 .orElse(false);
+    }
+
+    public List<Usuario> listar(){
+        List<Usuario> lista = usuarioRepository.findAll();
+        return lista;
     }
 
 }

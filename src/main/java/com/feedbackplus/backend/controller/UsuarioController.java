@@ -3,13 +3,16 @@ package com.feedbackplus.backend.controller;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.feedbackplus.backend.model.Pessoa;
+import com.feedbackplus.backend.model.Usuario;
 import com.feedbackplus.backend.service.UsuarioService;
 
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -49,4 +52,14 @@ public class UsuarioController {
             return ResponseEntity.status(401).body("{\"erro\": \"Login ou senha inválidos\"}");
         }
     }
+
+
+
+    @GetMapping("/listar")
+    public List<Usuario> listarTodos(){
+        List<Usuario> lista = usuarioService.listar();
+        return lista;
+    }
+
+
 }
