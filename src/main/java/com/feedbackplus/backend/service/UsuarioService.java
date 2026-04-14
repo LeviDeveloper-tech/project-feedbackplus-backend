@@ -24,7 +24,20 @@ public class UsuarioService {
             return "Erro: Este usuário ja existe!";
         }
 
+        Integer idFinal;
+
+        if(pessoaTipoId == 1){
+            idFinal = 1;
+        }else if(pessoaTipoId == 2){
+            Integer max = usuarioRepository.findMaxIdFuncionario();
+            idFinal = (max==null) ? 100 : max + 1;
+        }else{
+            Integer max = usuarioRepository.findMaxIdCliente();
+            idFinal = (max == null) ? 30000 : max +1;
+        }
+
         Pessoa pessoa = new Pessoa();
+        pessoa.setPessoaId(idFinal);
         pessoa.setNome(dados.getNome());
         pessoa.setCpf(dados.getCpf());
         pessoa.setNascimento(dados.getNascimento());
@@ -36,6 +49,7 @@ public class UsuarioService {
         Pessoa pessoaSalva = pessoaRepository.save(pessoa);
 
         Usuario novoUsuario = new Usuario();
+        novoUsuario.setUsuarioId(idFinal);
         novoUsuario.setNome(pessoaSalva.getNome());
         novoUsuario.setLogin(dados.getLogin());
         novoUsuario.setSenha(dados.getSenha());

@@ -10,7 +10,6 @@ import lombok.Data;
 @Data
 public class Usuario {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "usuario_id")
     private Integer usuarioId;
 

@@ -11,7 +11,6 @@ import lombok.Data;
 @Data
 public class Pessoa {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "pessoa_id")
     private Integer pessoaId;
 
