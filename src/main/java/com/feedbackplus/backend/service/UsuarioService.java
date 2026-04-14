@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.feedbackplus.backend.dtos.UsuarioCadastroDTO;
 import com.feedbackplus.backend.model.Pessoa;
 import com.feedbackplus.backend.model.Usuario;
 import com.feedbackplus.backend.repository.*;
@@ -18,11 +19,17 @@ public class UsuarioService {
     private PessoaRepository pessoaRepository;
 
     @Transactional
-    public String cadastrarNovoUsuario(Pessoa pessoa, String login, String senha) {
-        if (usuarioRepository.existsByLogin(login)) {
+    public String cadastrarNovoUsuario(UsuarioCadastroDTO dados, Integer pessoaTipoId) {
+        if (usuarioRepository.existsByLogin(dados.getLogin())) {
             return "Erro: Este usuário ja existe!";
         }
 
+        Pessoa pessoa = new Pessoa();
+        pessoa.setNome(dados.getNome());
+        pessoa.setCpf(dados.getCpf());
+        pessoa.setNascimento(dados.getNascimento());
+        pessoa.setTelefone(dados.getTelefone());
+        pessoa.setPessoaId(pessoaTipoId);
         pessoa.setAtualizadoEm(LocalDateTime.now());
 
         //Retorna os valores salvos/atualizados direto do banco
@@ -30,8 +37,8 @@ public class UsuarioService {
 
         Usuario novoUsuario = new Usuario();
         novoUsuario.setNome(pessoaSalva.getNome());
-        novoUsuario.setLogin(login);
-        novoUsuario.setSenha(senha);
+        novoUsuario.setLogin(dados.getLogin());
+        novoUsuario.setSenha(dados.getSenha());
         novoUsuario.setAtualizadoEm(LocalDateTime.now());
 
         usuarioRepository.save(novoUsuario);

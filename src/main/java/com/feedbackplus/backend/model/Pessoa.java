@@ -25,7 +25,7 @@ public class Pessoa {
     private String telefone;
 
     @Column(name = "pessoa_tipo_id")
-    private Integer pessoaTipoId = 3;
+    private Integer pessoaTipoId;
 
     @Column(name = "atualizado_em")
     private LocalDateTime atualizadoEm;

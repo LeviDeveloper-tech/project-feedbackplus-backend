@@ -2,9 +2,9 @@ package com.feedbackplus.backend.controller;
 
 import org.springframework.web.bind.annotation.RestController;
 
-import com.feedbackplus.backend.model.Pessoa;
 import com.feedbackplus.backend.model.Usuario;
 import com.feedbackplus.backend.service.UsuarioService;
+import com.feedbackplus.backend.dtos.UsuarioCadastroDTO;
 
 import java.util.List;
 import java.util.Map;
@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @RequestMapping("/api/usuarios")
@@ -24,18 +23,24 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class UsuarioController {
     @Autowired
     private UsuarioService usuarioService;
-    @PostMapping("/cadastrar")
-    public ResponseEntity<String> cadastrar(
-            @RequestBody Pessoa pessoa,
-            @RequestParam String login,
-            @RequestParam String senha) {
-
-        String resultado = usuarioService.cadastrarNovoUsuario(pessoa, login, senha);
-
+    
+    //Cadastra clientes
+    @PostMapping("/cadastrar-cliente")
+    public ResponseEntity<String> cadastrarCliente( @RequestBody UsuarioCadastroDTO dados) {
+        String resultado = usuarioService.cadastrarNovoUsuario(dados, 3);
         if (resultado.contains("Erro")) {
             return ResponseEntity.badRequest().body(resultado);
         }
-
+        return ResponseEntity.ok(resultado);
+    }
+    
+    //Cadastra usuários-funcionários
+    @PostMapping("/cadastrar-funcionario")
+    public ResponseEntity<String> cadastrarFuncionario( @RequestBody UsuarioCadastroDTO dados) {
+        String resultado = usuarioService.cadastrarNovoUsuario(dados, 2);
+        if (resultado.contains("Erro")) {
+            return ResponseEntity.badRequest().body(resultado);
+        }
         return ResponseEntity.ok(resultado);
     }
 
