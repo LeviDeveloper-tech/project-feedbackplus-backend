@@ -29,8 +29,8 @@ public class UsuarioService {
         pessoa.setCpf(dados.getCpf());
         pessoa.setNascimento(dados.getNascimento());
         pessoa.setTelefone(dados.getTelefone());
-        pessoa.setPessoaId(pessoaTipoId);
         pessoa.setAtualizadoEm(LocalDateTime.now());
+        pessoa.setPessoaTipoId(pessoaTipoId);
 
         //Retorna os valores salvos/atualizados direto do banco
         Pessoa pessoaSalva = pessoaRepository.save(pessoa);
