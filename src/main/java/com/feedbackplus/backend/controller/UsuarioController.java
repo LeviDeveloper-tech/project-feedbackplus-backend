@@ -23,22 +23,24 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class UsuarioController {
     @Autowired
     private UsuarioService usuarioService;
-    
-    //Cadastra clientes
+
+    // Cadastra clientes
     @PostMapping("/cadastrar-cliente")
-    public ResponseEntity<String> cadastrarCliente( @RequestBody UsuarioCadastroDTO dados) {
+    public ResponseEntity<?> cadastrarCliente(@RequestBody UsuarioCadastroDTO dados) {
+
         String resultado = usuarioService.cadastrarNovoUsuario(dados, 3);
-        if (resultado.contains("Erro")) {
+
+        if (resultado.contains("Conflito")) {
             return ResponseEntity.badRequest().body(resultado);
         }
         return ResponseEntity.ok(resultado);
     }
-    
-    //Cadastra usuários-funcionários
+
+    // Cadastra usuários-funcionários
     @PostMapping("/cadastrar-funcionario")
-    public ResponseEntity<String> cadastrarFuncionario( @RequestBody UsuarioCadastroDTO dados) {
+    public ResponseEntity<String> cadastrarFuncionario(@RequestBody UsuarioCadastroDTO dados) {
         String resultado = usuarioService.cadastrarNovoUsuario(dados, 2);
-        if (resultado.contains("Erro")) {
+        if (resultado.contains("Conflito")) {
             return ResponseEntity.badRequest().body(resultado);
         }
         return ResponseEntity.ok(resultado);
@@ -58,13 +60,10 @@ public class UsuarioController {
         }
     }
 
-
-
     @GetMapping("/listar")
-    public List<Usuario> listarTodos(){
+    public List<Usuario> listarTodos() {
         List<Usuario> lista = usuarioService.listar();
         return lista;
     }
-
 
 }

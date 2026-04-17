@@ -5,7 +5,10 @@ import org.springframework.stereotype.Repository;
 
 import com.feedbackplus.backend.model.Pessoa;
 
+
 @Repository
 public interface PessoaRepository extends JpaRepository<Pessoa, Long> {
+
+    boolean existsByCpf(String cpf);
 
 }

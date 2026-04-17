@@ -20,20 +20,25 @@ public class UsuarioService {
 
     @Transactional
     public String cadastrarNovoUsuario(UsuarioCadastroDTO dados, Integer pessoaTipoId) {
+
+        // ------Verificação de Cpf------
+        if (pessoaRepository.existsByCpf(dados.getCpf())) {
+            return "Conflito no servidor | CPF já cadastrado!";
+        }
+        // ------Verificação de login------
         if (usuarioRepository.existsByLogin(dados.getLogin())) {
-            return "Erro: Este usuário ja existe!";
+            return "Conflito no servidor | Este usuário ja existe!";
         }
 
         Integer idFinal;
-
-        if(pessoaTipoId == 1){
+        if (pessoaTipoId == 1) {
             idFinal = 1;
-        }else if(pessoaTipoId == 2){
+        } else if (pessoaTipoId == 2) {
             Integer max = usuarioRepository.findMaxIdFuncionario();
-            idFinal = (max==null) ? 100 : max + 1;
-        }else{
+            idFinal = (max == null) ? 100 : max + 1;
+        } else {
             Integer max = usuarioRepository.findMaxIdCliente();
-            idFinal = (max == null) ? 30000 : max +1;
+            idFinal = (max == null) ? 30000 : max + 1;
         }
 
         Pessoa pessoa = new Pessoa();
@@ -45,7 +50,7 @@ public class UsuarioService {
         pessoa.setAtualizadoEm(LocalDateTime.now());
         pessoa.setPessoaTipoId(pessoaTipoId);
 
-        //Retorna os valores salvos/atualizados direto do banco
+        // Retorna os valores salvos/atualizados direto do banco
         Pessoa pessoaSalva = pessoaRepository.save(pessoa);
 
         Usuario novoUsuario = new Usuario();
@@ -67,7 +72,7 @@ public class UsuarioService {
                 .orElse(false);
     }
 
-    public List<Usuario> listar(){
+    public List<Usuario> listar() {
         List<Usuario> lista = usuarioRepository.findAll();
         return lista;
     }
