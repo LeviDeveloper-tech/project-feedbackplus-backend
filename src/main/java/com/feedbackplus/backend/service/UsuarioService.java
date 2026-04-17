@@ -66,7 +66,7 @@ public class UsuarioService {
 
     }
 
-    public boolean realizarLogin(String login, String senha) {
+    public boolean autenticarLogin(String login, String senha) {
         return usuarioRepository.findByLogin(login)
                 .map(user -> user.getSenha().equals(senha))
                 .orElse(false);

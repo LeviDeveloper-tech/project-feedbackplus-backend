@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.feedbackplus.backend.model.Usuario;
 import com.feedbackplus.backend.service.UsuarioService;
 import com.feedbackplus.backend.dtos.UsuarioCadastroDTO;
+import com.feedbackplus.backend.dtos.UsuarioLoginDTO;
 
 import java.util.List;
 import java.util.Map;
@@ -47,16 +48,14 @@ public class UsuarioController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody Map<String, String> dadosLogin) {
-        String login = dadosLogin.get("Login");
-        String senha = dadosLogin.get("senha");
+    public ResponseEntity<?> login(@RequestBody UsuarioLoginDTO dadosLogin) {
 
-        boolean autenticado = usuarioService.realizarLogin(login, senha);
+        boolean autenticado = usuarioService.autenticarLogin(dadosLogin.getLogin(), dadosLogin.getSenha());
 
         if (autenticado) {
-            return ResponseEntity.ok("{\"mensagem\": \"Login realizado com sucesso!\"}");
+            return ResponseEntity.ok(Map.of("mensagem","Login realizado com sucesso"));
         } else {
-            return ResponseEntity.status(401).body("{\"erro\": \"Login ou senha inválidos\"}");
+            return ResponseEntity.status(401).body(Map.of("erro", "Login ou senha inválidos"));
         }
     }
 
