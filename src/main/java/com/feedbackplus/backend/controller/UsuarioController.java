@@ -50,11 +50,15 @@ public class UsuarioController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody UsuarioLoginDTO dadosLogin) {
 
+        //Verifica se o login existe e se as senhas batem
         boolean autenticado = usuarioService.autenticarLogin(dadosLogin.getLogin(), dadosLogin.getSenha());
-
+        
         if (autenticado) {
-            return ResponseEntity.ok(Map.of("mensagem","Login realizado com sucesso"));
+            var usuario = usuarioService.buscarPorLogin(dadosLogin.getLogin());
+            //Envia response ok em JSON para o front
+            return ResponseEntity.ok(Map.of("mensagem","Login realizado com sucesso", "nome", usuario.getNome()));
         } else {
+            //Envia o response error em JSON para o front
             return ResponseEntity.status(401).body(Map.of("erro", "Login ou senha inválidos"));
         }
     }

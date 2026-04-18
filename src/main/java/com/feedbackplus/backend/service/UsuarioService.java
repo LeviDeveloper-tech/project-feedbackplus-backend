@@ -30,6 +30,8 @@ public class UsuarioService {
             return "Conflito no servidor | Este usuário ja existe!";
         }
 
+
+
         Integer idFinal;
         if (pessoaTipoId == 1) {
             idFinal = 1;
@@ -77,4 +79,10 @@ public class UsuarioService {
         return lista;
     }
 
+
+    public Usuario buscarPorLogin(String login){
+        return usuarioRepository.findByLogin(login).orElse(null);
+        
+
+    }
 }
