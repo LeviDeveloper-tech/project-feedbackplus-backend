@@ -18,6 +18,7 @@ public class UsuarioService {
     @Autowired
     private PessoaRepository pessoaRepository;
 
+    // ------CADASTRO DE USUÁRIO-------
     @Transactional
     public String cadastrarNovoUsuario(UsuarioCadastroDTO dados, Integer pessoaTipoId) {
 
@@ -29,8 +30,6 @@ public class UsuarioService {
         if (usuarioRepository.existsByLogin(dados.getLogin())) {
             return "Conflito no servidor | Este usuário ja existe!";
         }
-
-
 
         Integer idFinal;
         if (pessoaTipoId == 1) {
@@ -68,21 +67,43 @@ public class UsuarioService {
 
     }
 
+    // -------Autenticação de Login------------------
     public boolean autenticarLogin(String login, String senha) {
         return usuarioRepository.findByLogin(login)
                 .map(user -> user.getSenha().equals(senha))
                 .orElse(false);
     }
 
+    // ----------Método Listar---------------
     public List<Usuario> listar() {
         List<Usuario> lista = usuarioRepository.findAll();
         return lista;
     }
 
+    public void deletar(Integer id) {
+        if (usuarioRepository.existsById(id)) {
+            usuarioRepository.deleteById(id);
+        } else {
+            throw new RuntimeException("Usuário não encontrado para exclusão");
+        }
 
-    public Usuario buscarPorLogin(String login){
+    }
+
+    public Usuario buscarPorLogin(String login) {
         return usuarioRepository.findByLogin(login).orElse(null);
-        
+    }
 
+    public Usuario buscarPorId(Integer id) {
+        return usuarioRepository.findById(id).orElse(null);
+    }
+
+    public Usuario atualizar(Integer id, Usuario dadosNovos) {
+        Usuario usuarioExistente = usuarioRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
+        usuarioExistente.setNome(dadosNovos.getNome());
+        usuarioExistente.setLogin(dadosNovos.getLogin());
+
+        return usuarioRepository.save(usuarioExistente);
     }
 }
