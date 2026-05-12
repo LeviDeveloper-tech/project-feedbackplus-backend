@@ -1,9 +1,12 @@
 package com.feedbackplus.backend.controller;
 
 import com.feedbackplus.backend.model.Usuario;
+import com.feedbackplus.backend.service.PessoaService;
 import com.feedbackplus.backend.service.UsuarioService;
 import com.feedbackplus.backend.dtos.UsuarioCadastroDTO;
+import com.feedbackplus.backend.dtos.UsuarioListDTO;
 import com.feedbackplus.backend.dtos.UsuarioLoginDTO;
+import com.feedbackplus.backend.dtos.UsuarioUpdateDTO;
 
 import java.util.List;
 import java.util.Map;
@@ -18,6 +21,8 @@ import org.springframework.web.bind.annotation.*;
 public class UsuarioController {
     @Autowired
     private UsuarioService usuarioService;
+    @Autowired
+    private PessoaService pessoaService;
 
     // Cadastra clientes
     @PostMapping("/cadastrar-cliente")
@@ -25,18 +30,22 @@ public class UsuarioController {
 
         String resultado = usuarioService.cadastrarNovoUsuario(dados, 3);
 
-        if (resultado.contains("Conflito")) {
+        if (!"Usuário cadastrado com sucesso!".equals(resultado)) {
             return ResponseEntity.badRequest().body(resultado);
         }
         return ResponseEntity.ok(resultado);
     }
 
-    // Cadastra usuários-funcionários
-    @PostMapping("/cadastrar-funcionario")
-    public ResponseEntity<String> cadastrarGerencial(@RequestBody UsuarioCadastroDTO dados,
+    // Cadastra apenas empresas (perfilId = 2)
+    @PostMapping("/incluir-usuario")
+    public ResponseEntity<String> incluirUsuario(@RequestBody UsuarioCadastroDTO dados,
             @RequestParam Integer perfilId) {
+        if (perfilId == null || perfilId != 2) {
+            return ResponseEntity.badRequest().body("Somente empresas podem ser cadastradas por este endpoint.");
+        }
+
         String resultado = usuarioService.cadastrarNovoUsuario(dados, perfilId);
-        if (resultado.contains("Conflito")) {
+        if (!"Usuário cadastrado com sucesso!".equals(resultado)) {
             return ResponseEntity.badRequest().body(resultado);
         }
         return ResponseEntity.ok(resultado);
@@ -45,29 +54,33 @@ public class UsuarioController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody UsuarioLoginDTO dadosLogin) {
 
-        // Verifica se o login existe e se as senhas batem
         boolean autenticado = usuarioService.autenticarLogin(dadosLogin.getLogin(), dadosLogin.getSenha());
 
         if (autenticado) {
             var usuario = usuarioService.buscarPorLogin(dadosLogin.getLogin());
-            // Envia response ok em JSON para o front
-            return ResponseEntity.ok(Map.of("mensagem", "Login realizado com sucesso", "nome", usuario.getNome()));
+            var pessoaTipoId = pessoaService.returnPessoaTipoId(usuario.getUsuarioId());
+
+            // CORREÇÃO: Enviando todos os campos que o login.js espera
+            return ResponseEntity.ok(Map.of(
+                    "mensagem", "Login realizado com sucesso",
+                    "nome", usuario.getNome(),
+                    "usuarioId", usuario.getUsuarioId(),
+                    "pessoaTipoId", pessoaTipoId));
         } else {
-            // Envia o response error em JSON para o front
             return ResponseEntity.status(401).body(Map.of("erro", "Login ou senha inválidos"));
         }
     }
 
     // ---------listar-----------
     @GetMapping("/listar")
-    public ResponseEntity<List<Usuario>> listarTodos() {
-        return ResponseEntity.ok(usuarioService.listar());
+    public ResponseEntity<List<UsuarioListDTO>> listarTodos() {
+        return ResponseEntity.ok(usuarioService.listarComTipo());
     }
 
     // -----Buscar por Id---------
     @GetMapping("/{id}")
-    public ResponseEntity<Usuario> buscarPorId(@PathVariable Integer id) {
-        Usuario usuario = usuarioService.buscarPorId(id);
+    public ResponseEntity<UsuarioUpdateDTO> buscarPorId(@PathVariable Integer id) {
+        UsuarioUpdateDTO usuario = usuarioService.buscarDetalhesPorId(id);
         return ResponseEntity.ok(usuario);
     }
 
@@ -80,7 +93,7 @@ public class UsuarioController {
 
     // ------Atualizar------------
     @PutMapping("/{id}")
-    public ResponseEntity<Usuario> atualizar(@PathVariable Integer id, @RequestBody Usuario usuarioDados) {
+    public ResponseEntity<Usuario> atualizar(@PathVariable Integer id, @RequestBody UsuarioUpdateDTO usuarioDados) {
         Usuario usuarioAtualizado = usuarioService.atualizar(id, usuarioDados);
 
         return ResponseEntity.ok(usuarioAtualizado);
