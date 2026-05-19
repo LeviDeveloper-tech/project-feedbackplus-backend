@@ -24,6 +24,17 @@ public class UsuarioController {
     @Autowired
     private PessoaService pessoaService;
 
+    //Cadastrar Empresa
+    @PostMapping("/cadastrar-empresa")
+    public ResponseEntity<?> cadastrarEmpresa(@RequestBody UsuarioCadastroDTO dados){
+        String resultado = usuarioService.cadastrarNovoUsuario(dados, 2);
+
+        if(resultado.contains("Conflito") || resultado.contains("Erro")){
+            return ResponseEntity.badRequest().body(resultado);
+        }
+        return ResponseEntity.ok(resultado);
+    }
+    
     // Cadastra clientes
     @PostMapping("/cadastrar-cliente")
     public ResponseEntity<?> cadastrarCliente(@RequestBody UsuarioCadastroDTO dados) {
@@ -36,7 +47,7 @@ public class UsuarioController {
         return ResponseEntity.ok(resultado);
     }
 
-    // Cadastra apenas empresas (perfilId = 2)
+    // Método usado pelo adm para incluir usuário
     @PostMapping("/incluir-usuario")
     public ResponseEntity<String> incluirUsuario(@RequestBody UsuarioCadastroDTO dados,
             @RequestParam Integer perfilId) {
